@@ -24,13 +24,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // TODO - need to review performance of every minute commands. Perhaps seed with a few thousand sites, all of which need alerts...
-
-		// task to check website uptime
-        $schedule->command('monitor:sites')->everyMinute();
-
         // iterate over other website tests
-		$schedule->command('test:sites')->everyTenMinutes();
+        $schedule->command('test:sites')->everyMinute();
+        $schedule->command('monitor:sites')->everyMinute();
     }
 
     /**

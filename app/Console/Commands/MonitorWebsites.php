@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log;
 use App\Site;
 use App\Alert;
 
+use Illuminate\Support\Str;
+
 use App\Notifications\AlertCreated;
 use App\Notifications\AlertResolved;
 
@@ -50,91 +52,50 @@ class MonitorWebsites extends Command
 
         // check all production urls with curl.
         foreach( $sites as $site ):
-            if( !empty($site->production_url) ):
 
-                $curl = curl_init($site->production_url);
-                curl_setopt($curl, CURLOPT_HEADER, true);
-                curl_setopt($curl, CURLOPT_NOBODY, true);
-                curl_setopt($curl, CURLOPT_RETURNTRANSFER,1);
-                curl_setopt($curl, CURLOPT_TIMEOUT,15);
-                $output = curl_exec($curl);
-                $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-                curl_close($curl);
+          // does the site have an open, unresolved alert?
+          $openAlert = $site->alerts->where('resolved', '0')->first();
 
-                $activeAlert = $site->alerts->where('resolved', '0')->first();
+          // curl the site and collect httpcode.
+          $curl = curl_init($site->site_url);
+          $options = array(
+            CURLOPT_HEADER => true,
+            CURLOPT_NOBODY => true,
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_TIMEOUT => 15
+          );
+          curl_setopt_array($curl, $options);
+          $output = curl_exec($curl);
+          $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+          curl_close($curl);
 
-                // if an alert exists, just check for 200 response.
-                if( $activeAlert ):
-
-                    if( $httpcode == '200'):
-                        $alert = Alert::updateOrCreate(
-                            ['id' => $activeAlert->id],
-                            [
-                                'resolved' => true,
-                                'resolved_at' => Carbon::now(),
-                            ]
-                        );
-                        $users = $site->organisation->users;
-                        foreach( $users as $user):
-                            $user->notify(new AlertResolved($alert));
-                        endforeach;
-                    endif;
-
-                // no alert exists - check for downtime..
-                else:
-                    if($httpcode == '200'):
-
-						echo $site->production_url . " is up.";
-
-                    elseif($httpcode == '0'):
-
-						echo "Lookup failed for " . $site->production_url . " because service is down.";
-                        Log::error($site->production_url . ' has a status code of 0. Further investigation needed');
-
-                    else:
-
-                        if($httpcode == '404'):
-							echo $site->production_url . " could not be found.";
-                            $status = 'Unavailable';
-                            $message = 'Website returned 404 - Page not found.';
-                        elseif($httpcode == '503'):
-							echo $site->production_url . " is unavailable.";
-                            $status = 'Unavailable';
-                            $message = 'Website returned 503 - Service Unavailable';
-                        elseif($httpcode == '500'):
-							echo $site->production_url . " is returning a 500 server error.";
-                            $status = 'Unavailable';
-                            $message = 'Website returned 500 Internal Server Error';
-                        elseif($httpcode == '302'):
-							echo $site->production_url . " is redirecting to a different URL.";
-                            $status = 'Redirecting';
-                            $message = 'Website returned 302 (Temporary) Redirection. Please reconfigure your stored website URL';
-                        elseif($httpcode == '301'):
-							echo $site->production_url . " is redirecting to a different URL.";
-                            $status = 'Redirecting';
-                            $message = 'Website returned 301 (Permanent) Redirection. Please reconfigure your stored website URL';
-                        endif;
-
-                        $timestamp = date('YmdHis').substr(microtime(0), 2, 3);
-
-                        $alert = Alert::create([
-                            'id' => $timestamp,
-                            'site_id' => $site->id,
-                            'organisation_id' => $site->organisation->id,
-                            'status' => $status,
-                            'message' => $message,
-                        ]);
-
-                        $users = $site->organisation->users;
-                        foreach( $users as $user):
-                            $user->notify(new AlertCreated($alert));
-                        endforeach;
-
-                    endif;
-                endif;
-
-            endif;
+          if($openAlert){
+            if($httpcode == '200'){
+              Alert::updateOrCreate(
+                ['id' => $openAlert->id],
+                ['resolved' => true],
+                ['resolved_at' => Carbon::now()]
+              );
+            }
+          }
+          else {
+            if($httpcode == '0'){
+              Log::error($site->site_url . ' has a status code of 0. Further investigation needed');
+            }
+            elseif(in_array($httpcode, array('301', '302', '404', '500', '503'))){
+              $alert = Alert::create([
+                'id' => Str::uuid(),
+                'site_id' => $site->id,
+                'organisation_id' => $site->organisation->id,
+                'status' => $httpcode,
+                'message' => 'Website Returned ' . $httpcode . ' Error',
+              ]);
+            }
+            else {
+              Log::error($site->site_url . ' has a status code of ' . $httpcode . '. Further investigation needed');
+            }
+          }
+          
         endforeach;
-
     }
 }

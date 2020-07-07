@@ -46,4 +46,4 @@ Route::get('/organisation/new', 'OrganisationController@new')->name('new_organis
 Route::post('/organisation/create/{user_id}', 'OrganisationController@store')->name('create_organisation');
 
 /* Monitor Test */
-Route::get('/monitor', 'MonitorController@index');
+//Route::get('/monitor', 'MonitorController@index');

@@ -1,13 +1,14 @@
 <template>
-  <div>
+  <div v-if="tests.length">
     <div class="card mb-3" v-for="test in tests">
       <div class="card-header">
         <div class="row align-items-center">
           <div class="col-8">
-            <h4 class="heading h5 mb-0">
-              {{ test.type }}
-              <small v-if="test.type === 'element'">{{ test.element }}</small>
-            </h4>
+            <h4 class="heading h5 mb-0">{{ test.type }}</h4>
+            <p
+              class="text-muted mb-0"
+              v-if="test.type === 'Check Element Loading'"
+            >{{ test.element }} at {{ test.test_url }}</p>
           </div>
           <div class="col-4">
             <div class="card-icon-actions text-right">
@@ -28,6 +29,9 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class="pt-5" v-else>
+    <p class="text-muted text-center">There are no tests for this site. Please create one above :)</p>
   </div>
 </template>
 

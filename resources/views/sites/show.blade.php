@@ -10,7 +10,7 @@
 
   <nav aria-label="breadcrumb">
     <div class="container">
-      <ol class="breadcrumb">
+      <ol class="breadcrumb bg-white p-0">
         <li class="breadcrumb-item"><a href="/">Sites</a></li>
         <li class="breadcrumb-item active">{{ $site->name }}</li>
       </ol>
@@ -38,17 +38,14 @@
 
 		<section class="slice slice-lg">
 			<div class="container">
-
 				<div class="row justify-content-center">
 					<div class="col-lg-8">
-
             <h3 class="heading h5 mb-4">Tests</h3>
 
             <test-feed :tests="{{ $tests }}"></test-feed>
 				
 					</div>
 				</div>
-
 			</div>
 		</section>
 

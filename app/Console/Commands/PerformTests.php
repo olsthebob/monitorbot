@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Sunra\PhpSimple\HtmlDomParser;
 use App\Site;
+use App\Test;
 
 class PerformTests extends Command
 {
@@ -40,63 +41,42 @@ class PerformTests extends Command
     public function handle()
     {
 
+			// get all tests.
+			$tests = Test::all();
 
-			// get all sites.
-			$sites = Site::all();
+			// loop through tests
+			foreach( $tests as $test ):
 
-			// check all production urls with curl.
-			foreach( $sites as $site ):
+				// save url and target site html as an object for comparison
+				$url = $test->test_url;
+				$html = HtmlDomParser::file_get_html( $url, 0, null, 0 );
 
-				$tests = $site->tests;
-
-				foreach( $tests as $test ):
-
-					$type = "detect_element";
-					$url = "http://ollybradshaw.com";
-					$object = "h2";
-
-					echo $object;
-					die();
-
-					if($type === 'detect_element'){
-						$html = HtmlDomParser::file_get_html( $url, false, null, 0 );
-						echo $html;
-						$el = $html->find($object);
-
-						if($el){
-							$i=0;
-							foreach( $el as $element){
-								$i++;
-							}
-							echo "PASS: found " . $i . " elements that match. \n";
-						} else {
-							echo "FAIL: no elements found. \n";
-						}
+				// for each different type of test, compare the code against specific conditions...
+				if($test->type === "Check Google Analytics"){
+					$comparison = !empty(strpos($html, '//www.googletagmanager.com/gtag/js?id='));
+				}
+				elseif($test->type === "Check Tag Manager") {
+					$comparison = !empty(strpos($html, '//www.googletagmanager.com/gtag/js?id='));
+				}
+				elseif($test->type === "Check Meta Description") {
+					foreach($html->find("meta[name='description']") as $element){
+						$content = $element->content;
 					}
+					$comparison = (isset($content) && !empty($content)) ? 1 : 0;
+				}
+				elseif($test->type === "Check Element Loading") {
+					$element = $test->element;
+					$comparison = $html->find($element);
+				}
 
-					if($type === 'check_analytics'){
-						$html = HtmlDomParser::file_get_html( $url, false, null, 0 );
-						//echo $html;
+				// store results of test into variable.
+				$result = $comparison ? 1 : 0;
 
-						if (strpos($html, '//www.google-analytics.com/analytics.js') !== false) {
-							echo "PASS: found analytics code\n";
-						} else {
-							echo "FAIL: no analytics code found. \n";
-						}
-					}
-
-					if($type === 'check_tag_manager'){
-						$html = HtmlDomParser::file_get_html( $url, false, null, 0 );
-						//echo $html;
-
-						if (strpos($html, 'https://www.googletagmanager.com/gtm.js?id=') !== false) {
-							echo "PASS: found tag manager code\n";
-						} else {
-							echo "FAIL: no tag manager code found. \n";
-						}
-					}
-
-				endforeach;
+				// update test record to reflect result.
+				Test::updateOrCreate(
+					['id' => $test->id],
+					['status' => $result]
+				);
 
 			endforeach;
 

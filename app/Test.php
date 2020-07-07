@@ -10,7 +10,7 @@ class Test extends Model
 
 	public $incrementing = false;
 
-	public function organisation() {
+	public function site() {
 		return $this->belongsTo('App\Site');
 	}
 }

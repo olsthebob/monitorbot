@@ -12,6 +12,10 @@ use App\User;
 
 class SitesController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     public function show(Site $site) {
         $tests = $site->tests;
@@ -33,7 +37,7 @@ class SitesController extends Controller
             'id' => Str::uuid(),
             'name' => request('name'),
             'organisation_id' => auth()->user()->organisation->id,
-            'site_url' => request('site_url'),
+            'site_url' => rtrim(request('site_url'), '/'),
         ]);
 
         // Return Response

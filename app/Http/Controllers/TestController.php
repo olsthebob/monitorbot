@@ -10,24 +10,31 @@ use App\Test;
 
 class TestController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+    
     public function store(Request $request){
 
-        // if element id is 
-        $type = request('test_type');
-
-        if($type == 'element'){
+        if(request('test_type') == 'Check Element Loading'){
             $element_type = request('element_type');
             $element = $element_type . request('element');
         }
+
+        $root_url = request('site_root_url');
+        $page_url = request('test_url');
+
         $site_id = request('site_id');
 
         Test::create([
             'id' => Str::uuid(),
             'site_id' => $site_id,
             'organisation_id' => auth()->user()->organisation->id,
-            'test_url' => request('test_url'),
+            'test_url' => !empty($page_url) ? $root_url . $page_url : $root_url,
             'type' => request('test_type'),
-			'element' => $element ? $element : null
+			'element' => !empty($element) ? $element : null
         ]);
 
         // Return Response

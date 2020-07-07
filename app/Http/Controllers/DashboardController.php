@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
+use App\Alert;
 use App\Site;
 use App\User;
 use App\Organisation;
@@ -35,7 +36,7 @@ class DashboardController extends Controller
         $organisation = $user->organisation->id;
 
         // get all sites belonging to user organisation
-        $sites = Site::where('organisation_id', $organisation)->orderBy('name')->get();
+        $sites = Site::where('organisation_id', $organisation)->with('tests', 'alerts')->orderBy('name')->get();
         
         // return view
         return view('dashboard', compact('sites', 'user'));
