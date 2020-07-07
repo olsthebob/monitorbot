@@ -50,44 +50,57 @@ class MonitorWebsites extends Command
         // get all sites.
         $sites = Site::all();
 
-        // check all production urls with curl.
+        // check all site urls with curl.
         foreach( $sites as $site ):
-
-          // grab users for potential notification
-          $users = $site->organisation->users;
 
           // does the site have an open, unresolved alert?
           $openAlert = $site->alerts->where('resolved', '0')->first();
 
-          // curl the site and collect httpcode.
+          // init curl
           $curl = curl_init($site->site_url);
+
+          // set curl options
           $options = array(
-            CURLOPT_HEADER => true,
-            CURLOPT_NOBODY => true,
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_TIMEOUT => 15
+            CURLOPT_HEADER => true, // pass headers into data stream
+            CURLOPT_NOBODY => true, // get request without body
+            CURLOPT_RETURNTRANSFER => 1, // return transfer as string of return value of exec()
+            CURLOPT_TIMEOUT => 15 // set timeout
           );
           curl_setopt_array($curl, $options);
-          $output = curl_exec($curl);
+
+          // do the curl
+          curl_exec($curl);
+
+          // grab the http code and store
           $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
+          // close curl
           curl_close($curl);
 
+          // if there is an open alert
           if($openAlert){
+            
             if($httpcode == '200'){
               $alert = Alert::updateOrCreate(
                 ['id' => $openAlert->id],
                 ['resolved' => true],
                 ['resolved_at' => Carbon::now()]
               );
-              foreach( $users as $user):
+              foreach($site->organisation->users as $user):
                 $user->notify(new AlertResolved($alert));
               endforeach;
             }
+            
           }
+
           else {
+
             if($httpcode == '0'){
-              Log::error($site->site_url . ' has a status code of 0. Further investigation needed');
+              Log::error(
+                $site->site_url . ' has a status code of 0. Further investigation needed'
+              );
             }
+
             elseif(in_array($httpcode, array('301', '302', '404', '500', '503'))){
 
               $alert = Alert::create([
@@ -98,14 +111,18 @@ class MonitorWebsites extends Command
                 'message' => 'Website Returned ' . $httpcode . ' Error',
               ]);
 
-              foreach( $users as $user):
-                  $user->notify(new AlertCreated($alert));
+              foreach($site->organisation->users as $user):
+                $user->notify(new AlertCreated($alert));
               endforeach;
 
             }
+
             else {
-              Log::error($site->site_url . ' has a status code of ' . $httpcode . '. Further investigation needed');
+              Log::error(
+                $site->site_url . ' has a status code of ' . $httpcode . '. Further investigation needed'
+              );
             }
+
           }
         endforeach;
     }

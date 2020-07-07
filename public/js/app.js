@@ -49470,7 +49470,7 @@ var render = function() {
               }
             ],
             staticClass: "form-control form-control-lg",
-            attrs: { type: "text", placeholder: "Search" },
+            attrs: { type: "text", placeholder: "Filter sites by name" },
             domProps: { value: _vm.search },
             on: {
               input: function($event) {
@@ -50050,6 +50050,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "new-test-form",
@@ -50131,6 +50132,10 @@ var render = function() {
               }
             },
             [
+              _c("option", { attrs: { selected: "", disabled: "" } }, [
+                _vm._v("Please Select Test Type")
+              ]),
+              _vm._v(" "),
               _c("option", [_vm._v("Check Google Analytics")]),
               _vm._v(" "),
               _c("option", [_vm._v("Check Tag Manager")]),

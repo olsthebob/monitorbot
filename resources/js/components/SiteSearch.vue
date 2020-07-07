@@ -11,7 +11,7 @@
           type="text"
           class="form-control form-control-lg"
           v-model="search"
-          placeholder="Search"
+          placeholder="Filter sites by name"
         />
       </div>
     </div>

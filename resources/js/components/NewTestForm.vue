@@ -4,6 +4,7 @@
       <div class="form-group mb-2">
         <label>Test Type</label>
         <select class="form-control" v-model="fields.test_type" title="Select Test Type">
+          <option selected disabled>Please Select Test Type</option>
           <option>Check Google Analytics</option>
           <option>Check Tag Manager</option>
           <option>Check Meta Description</option>
