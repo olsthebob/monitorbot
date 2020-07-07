@@ -25,8 +25,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // iterate over other website tests
-        $schedule->command('test:sites')->everyMinute();
-        $schedule->command('monitor:sites')->everyMinute();
+        $schedule->command('sites:test')->everyMinute();
+        $schedule->command('sites:monitor')->everyMinute();
     }
 
     /**

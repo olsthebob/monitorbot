@@ -14,7 +14,7 @@ class PerformTests extends Command
      *
      * @var string
      */
-    protected $signature = 'test:sites';
+    protected $signature = 'sites:test';
 
     /**
      * The console command description.
@@ -69,10 +69,10 @@ class PerformTests extends Command
 					$comparison = $html->find($element);
 				}
 
-				// store results of test into variable.
+				// store results of test into variable as a boolean.
 				$result = $comparison ? 1 : 0;
 
-				// update test record to reflect result.
+				// update test record to reflect results above.
 				Test::updateOrCreate(
 					['id' => $test->id],
 					['status' => $result]

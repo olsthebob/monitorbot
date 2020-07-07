@@ -20,7 +20,7 @@ class MonitorWebsites extends Command
      *
      * @var string
      */
-    protected $signature = 'monitor:sites';
+    protected $signature = 'sites:monitor';
 
     /**
      * The console command description.
@@ -79,7 +79,7 @@ class MonitorWebsites extends Command
 
           // if there is an open alert
           if($openAlert){
-            
+
             if($httpcode == '200'){
               $alert = Alert::updateOrCreate(
                 ['id' => $openAlert->id],

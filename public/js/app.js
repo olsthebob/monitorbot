@@ -49415,6 +49415,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "site-search",
@@ -49425,14 +49430,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     };
   },
 
-
-  methods: {
-    activeAlerts: function activeAlerts(item) {
-      return item.filter(function (item) {
-        return item.resolved == 0;
-      });
-    }
-  },
 
   computed: {
     siteSearch: function siteSearch() {
@@ -49488,58 +49485,62 @@ var render = function() {
       _vm._v(" "),
       _vm._l(_vm.siteSearch, function(site) {
         return _c("div", { staticClass: "card mb-3" }, [
-          _c("a", { attrs: { href: "site/" + site.id } }, [
-            _c("div", { staticClass: "card-header" }, [
-              _c("div", { staticClass: "row align-items-center" }, [
-                _c("div", { staticClass: "col-8" }, [
-                  _c("h4", { staticClass: "heading h5 mb-0" }, [
-                    _vm._v(_vm._s(site.name))
-                  ]),
-                  _vm._v(" "),
-                  _c("p", { staticClass: "text-muted mb-0" }, [
-                    _vm._v(_vm._s(site.site_url))
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-4" }, [
-                  _c("div", { staticClass: "card-icon-actions text-right" }, [
-                    site.tests
-                      ? _c("span", { staticClass: "badge badge-dot" }, [
-                          _vm._v(
-                            "\n                " +
-                              _vm._s(site.tests.length) +
-                              " Tests Running\n                "
-                          ),
-                          _c("i", { staticClass: "bg-primary ml-1" })
-                        ])
-                      : _vm._e(),
+          _c("div", { staticClass: "list-group" }, [
+            _c(
+              "a",
+              {
+                staticClass:
+                  "list-group-item list-group-item-action d-flex align-items-center p-4",
+                attrs: { href: "site/" + site.id }
+              },
+              [
+                _c("div", { staticClass: "list-group-content" }, [
+                  _c("div", { staticClass: "row align-items-center" }, [
+                    _c("div", { staticClass: "col-8" }, [
+                      _c("h4", { staticClass: "heading h5 mb-0" }, [
+                        _vm._v(_vm._s(site.name))
+                      ]),
+                      _vm._v(" "),
+                      _c("p", { staticClass: "text-muted mb-0" }, [
+                        _vm._v(_vm._s(site.site_url))
+                      ])
+                    ]),
                     _vm._v(" "),
-                    _vm.activeAlerts(site.alerts).length > 0
-                      ? _c(
-                          "div",
-                          _vm._l(_vm.activeAlerts(site.alerts), function(
-                            active
-                          ) {
-                            return _c(
-                              "span",
-                              { staticClass: "badge badge-dot" },
-                              [
+                    _c("div", { staticClass: "col-4" }, [
+                      _c(
+                        "div",
+                        { staticClass: "card-icon-actions text-right" },
+                        [
+                          site.tests
+                            ? _c("span", { staticClass: "badge badge-dot" }, [
                                 _vm._v(
                                   "\n                  " +
-                                    _vm._s(active.message) +
-                                    "\n                  "
+                                    _vm._s(site.tests.length) +
+                                    " Tests Running\n                  "
                                 ),
-                                _c("i", { staticClass: "bg-red ml-1" })
-                              ]
-                            )
-                          }),
-                          0
-                        )
-                      : _c("div", [_vm._m(1, true)])
+                                _c("i", { staticClass: "bg-primary ml-1" })
+                              ])
+                            : _vm._e(),
+                          _vm._v(" "),
+                          site.alerts.length > 0
+                            ? _c("div", [
+                                _c("span", { staticClass: "badge badge-dot" }, [
+                                  _vm._v(
+                                    "\n                    " +
+                                      _vm._s(site.alerts[0].status) +
+                                      " Error\n                    "
+                                  ),
+                                  _c("i", { staticClass: "bg-red ml-1" })
+                                ])
+                              ])
+                            : _c("div", [_vm._m(1, true)])
+                        ]
+                      )
+                    ])
                   ])
                 ])
-              ])
-            ])
+              ]
+            )
           ])
         ])
       })
@@ -49563,7 +49564,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("span", { staticClass: "badge badge-dot" }, [
-      _vm._v("\n                  Website Available\n                  "),
+      _vm._v("\n                    Website Available\n                    "),
       _c("i", { staticClass: "bg-green ml-1" })
     ])
   }

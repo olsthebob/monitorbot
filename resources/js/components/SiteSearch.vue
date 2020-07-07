@@ -19,37 +19,42 @@
     <hr class="mb-4" />
 
     <div class="card mb-3" v-for="site in siteSearch">
-      <a v-bind:href="'site/' + site.id">
-        <div class="card-header">
-          <div class="row align-items-center">
-            <div class="col-8">
-              <h4 class="heading h5 mb-0">{{ site.name }}</h4>
-              <p class="text-muted mb-0">{{ site.site_url }}</p>
-            </div>
-            <div class="col-4">
-              <div class="card-icon-actions text-right">
-                <span class="badge badge-dot" v-if="site.tests">
-                  {{site.tests.length}} Tests Running
-                  <i class="bg-primary ml-1"></i>
-                </span>
+      <div class="list-group">
+        <a
+          v-bind:href="'site/' + site.id"
+          class="list-group-item list-group-item-action d-flex align-items-center p-4"
+        >
+          <div class="list-group-content">
+            <div class="row align-items-center">
+              <div class="col-8">
+                <h4 class="heading h5 mb-0">{{ site.name }}</h4>
+                <p class="text-muted mb-0">{{ site.site_url }}</p>
+              </div>
+              <div class="col-4">
+                <div class="card-icon-actions text-right">
+                  <span class="badge badge-dot" v-if="site.tests">
+                    {{site.tests.length}} Tests Running
+                    <i class="bg-primary ml-1"></i>
+                  </span>
 
-                <div v-if="activeAlerts(site.alerts).length > 0">
-                  <span class="badge badge-dot" v-for="active in activeAlerts(site.alerts)">
-                    {{ active.message }}
-                    <i class="bg-red ml-1"></i>
-                  </span>
-                </div>
-                <div v-else>
-                  <span class="badge badge-dot">
-                    Website Available
-                    <i class="bg-green ml-1"></i>
-                  </span>
+                  <div v-if="site.alerts.length > 0">
+                    <span class="badge badge-dot">
+                      {{ site.alerts[0].status }} Error
+                      <i class="bg-red ml-1"></i>
+                    </span>
+                  </div>
+                  <div v-else>
+                    <span class="badge badge-dot">
+                      Website Available
+                      <i class="bg-green ml-1"></i>
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -62,14 +67,6 @@ export default {
     return {
       search: ""
     };
-  },
-
-  methods: {
-    activeAlerts: function(item) {
-      return item.filter(function(item) {
-        return item.resolved == 0;
-      });
-    }
   },
 
   computed: {
