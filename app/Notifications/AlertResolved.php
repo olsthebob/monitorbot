@@ -46,9 +46,9 @@ class AlertResolved extends Notification
     {
         return (new MailMessage)
             ->success()
-            ->subject($this->alert->site->name . ' (' . $this->alert->site->production_url  .') is back online')
-            ->line($this->alert->site->name . ' (' . $this->alert->site->production_url  .') is back online')
-            ->action('See for yourself', url($this->alert->site->production_url))
+            ->subject($this->alert->site->name . ' (' . $this->alert->site->site_url  .') is back online')
+            ->line($this->alert->site->name . ' (' . $this->alert->site->site_url  .') is back online')
+            ->action('View Website', url($this->alert->site->site_url))
             ->line('We will continue to monitor your website for future downtime');
     }
 

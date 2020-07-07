@@ -24,6 +24,7 @@
           <div class="row align-items-center">
             <div class="col-8">
               <h4 class="heading h5 mb-0">{{ site.name }}</h4>
+              <p class="text-muted mb-0">{{ site.site_url }}</p>
             </div>
             <div class="col-4">
               <div class="card-icon-actions text-right">

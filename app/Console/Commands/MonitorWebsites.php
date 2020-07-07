@@ -53,6 +53,9 @@ class MonitorWebsites extends Command
         // check all production urls with curl.
         foreach( $sites as $site ):
 
+          // grab users for potential notification
+          $users = $site->organisation->users;
+
           // does the site have an open, unresolved alert?
           $openAlert = $site->alerts->where('resolved', '0')->first();
 
@@ -71,11 +74,14 @@ class MonitorWebsites extends Command
 
           if($openAlert){
             if($httpcode == '200'){
-              Alert::updateOrCreate(
+              $alert = Alert::updateOrCreate(
                 ['id' => $openAlert->id],
                 ['resolved' => true],
                 ['resolved_at' => Carbon::now()]
               );
+              foreach( $users as $user):
+                $user->notify(new AlertResolved($alert));
+              endforeach;
             }
           }
           else {
@@ -83,6 +89,7 @@ class MonitorWebsites extends Command
               Log::error($site->site_url . ' has a status code of 0. Further investigation needed');
             }
             elseif(in_array($httpcode, array('301', '302', '404', '500', '503'))){
+
               $alert = Alert::create([
                 'id' => Str::uuid(),
                 'site_id' => $site->id,
@@ -90,12 +97,16 @@ class MonitorWebsites extends Command
                 'status' => $httpcode,
                 'message' => 'Website Returned ' . $httpcode . ' Error',
               ]);
+
+              foreach( $users as $user):
+                  $user->notify(new AlertCreated($alert));
+              endforeach;
+
             }
             else {
               Log::error($site->site_url . ' has a status code of ' . $httpcode . '. Further investigation needed');
             }
           }
-          
         endforeach;
     }
 }

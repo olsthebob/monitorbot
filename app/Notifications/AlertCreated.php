@@ -46,10 +46,10 @@ class AlertCreated extends Notification
     {
         return (new MailMessage)
             ->error()
-            ->subject($this->alert->site->name . ' (' . $this->alert->site->production_url  .') is ' . $this->alert->status)
-            ->line($this->alert->site->name . ' (' . $this->alert->site->production_url  .') is ' . $this->alert->status . '.')
-            ->line($this->alert->message)
-            ->action('See for yourself', url($this->alert->site->production_url));
+            ->subject($this->alert->site->name . ' (' . $this->alert->site->site_url  .') is experiencing a ' . $this->alert->status . ' error')
+            ->line($this->alert->site->name . ' (' . $this->alert->site->site_url  .') is experiencing a ' . $this->alert->status . ' error')
+            ->line('Message: ' . $this->alert->message)
+            ->action('View Website', url($this->alert->site->site_url));
     }
 
     /**

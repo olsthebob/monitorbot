@@ -49414,6 +49414,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "site-search",
@@ -49493,6 +49494,10 @@ var render = function() {
                 _c("div", { staticClass: "col-8" }, [
                   _c("h4", { staticClass: "heading h5 mb-0" }, [
                     _vm._v(_vm._s(site.name))
+                  ]),
+                  _vm._v(" "),
+                  _c("p", { staticClass: "text-muted mb-0" }, [
+                    _vm._v(_vm._s(site.site_url))
                   ])
                 ]),
                 _vm._v(" "),
